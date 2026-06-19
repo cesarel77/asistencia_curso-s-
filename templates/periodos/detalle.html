@@ -1,0 +1,126 @@
+<!-- templates/periodos/detalle.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-calendar-range text-secondary"></i> 
+        Período {{ periodo.fecha_inicio }} - {{ periodo.fecha_fin }}
+    </h2>
+    <div>
+        <a href="/periodos/" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+        <a href="/periodos/{{ periodo.id }}/editar" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        {% if not periodo.activo %}
+        <a href="/periodos/{{ periodo.id }}/activar" class="btn btn-success">
+            <i class="bi bi-check-circle"></i> Activar
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <i class="bi bi-info-circle"></i> Datos del Período Académico
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Fecha Inicio:</div>
+                    <div class="col-9">
+                        <span class="badge bg-primary fs-6">
+                            <i class="bi bi-calendar-start"></i> {{ periodo.fecha_inicio }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Fecha Fin:</div>
+                    <div class="col-9">
+                        <span class="badge bg-danger fs-6">
+                            <i class="bi bi-calendar-end"></i> {{ periodo.fecha_fin }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Estado:</div>
+                    <div class="col-9">
+                        {% if periodo.activo %}
+                            <span class="badge bg-success fs-6">
+                                <i class="bi bi-check-circle"></i> Activo
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary fs-6">
+                                <i class="bi bi-circle"></i> Inactivo
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Duración:</div>
+                    <div class="col-9">
+                        {% set dias = (periodo.fecha_fin - periodo.fecha_inicio).days %}
+                        <span class="badge bg-info text-dark fs-6">
+                            <i class="bi bi-clock"></i> {{ dias }} días
+                        </span>
+                    </div>
+                </div>
+                
+                {% if cursos %}
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Cursos asociados:</div>
+                    <div class="col-9">
+                        {% for curso in cursos %}
+                            <span class="badge bg-success me-1 mb-1">
+                                <i class="bi bi-book"></i> {{ curso.nombre_curso }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Total cursos:</div>
+                    <div class="col-9">
+                        <span class="badge bg-primary">{{ cursos|length }} curso(s)</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Cursos asociados:</div>
+                    <div class="col-9">
+                        <span class="text-muted">No hay cursos asociados a este período</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Acciones rápidas -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-lightning"></i> Acciones Rápidas
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="/cursos/crear" class="btn btn-outline-primary">
+                        <i class="bi bi-book-plus"></i> Crear Curso
+                    </a>
+                    {% if not periodo.activo %}
+                    <a href="/periodos/{{ periodo.id }}/activar" class="btn btn-outline-success">
+                        <i class="bi bi-check-circle"></i> Activar Período
+                    </a>
+                    {% endif %}
+                    <a href="/periodos/{{ periodo.id }}/editar" class="btn btn-outline-warning">
+                        <i class="bi bi-pencil"></i> Editar Período
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

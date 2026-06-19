@@ -1,0 +1,206 @@
+<!-- templates/estudiantes/crear.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-person-plus"></i> Crear Nuevo Estudiante
+            </div>
+            <div class="card-body">
+                <form action="/api/estudiantes/" method="POST" id="formEstudiante">
+                    <!-- Nombre -->
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label fw-bold">
+                            <i class="bi bi-person"></i> Nombre <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="nombre" 
+                               name="nombre" 
+                               placeholder="Ingrese el nombre del estudiante"
+                               required
+                               maxlength="100">
+                        <div class="form-text">Máximo 100 caracteres.</div>
+                    </div>
+
+                    <!-- Apellido -->
+                    <div class="mb-3">
+                        <label for="apellido" class="form-label fw-bold">
+                            <i class="bi bi-person"></i> Apellido <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="apellido" 
+                               name="apellido" 
+                               placeholder="Ingrese el apellido del estudiante"
+                               required
+                               maxlength="100">
+                        <div class="form-text">Máximo 100 caracteres.</div>
+                    </div>
+
+                    <!-- RUT -->
+                    <div class="mb-3">
+                        <label for="rut" class="form-label fw-bold">
+                            <i class="bi bi-credit-card"></i> RUT <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="rut" 
+                               name="rut" 
+                               placeholder="Ej: 12345678-9"
+                               required
+                               maxlength="12">
+                        <div class="form-text">Formato: 12345678-9 (sin puntos).</div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-bold">
+                            <i class="bi bi-envelope"></i> Email <span class="text-danger">*</span>
+                        </label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="email" 
+                               name="email" 
+                               placeholder="Ej: estudiante@email.com"
+                               required
+                               maxlength="200">
+                        <div class="form-text">Formato: usuario@dominio.com</div>
+                    </div>
+
+                    <!-- Fecha de Nacimiento -->
+                    <div class="mb-3">
+                        <label for="fecha_nacimiento" class="form-label fw-bold">
+                            <i class="bi bi-calendar"></i> Fecha de Nacimiento <span class="text-danger">*</span>
+                        </label>
+                        <input type="date" 
+                               class="form-control" 
+                               id="fecha_nacimiento" 
+                               name="fecha_nacimiento" 
+                               required>
+                        <div class="form-text">La fecha debe ser posterior al año 2000 y no mayor a la actual.</div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/estudiantes/" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Guardar Estudiante
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-info-circle"></i> Información
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-asterisk text-danger"></i> Los campos marcados con 
+                    <span class="text-danger">*</span> son obligatorios.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-check-circle text-success"></i> Una vez creado, el estudiante podrá ser 
+                    asignado a cursos y registrar asistencias.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('formEstudiante').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validaciones básicas
+        const nombre = document.getElementById('nombre').value.trim();
+        const apellido = document.getElementById('apellido').value.trim();
+        const rut = document.getElementById('rut').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const fechaNacimiento = document.getElementById('fecha_nacimiento').value;
+        
+        // Validar campos obligatorios
+        if (!nombre) {
+            alert('El campo Nombre es obligatorio');
+            return;
+        }
+        if (!apellido) {
+            alert('El campo Apellido es obligatorio');
+            return;
+        }
+        if (!rut) {
+            alert('El campo RUT es obligatorio');
+            return;
+        }
+        if (!email) {
+            alert('El campo Email es obligatorio');
+            return;
+        }
+        if (!fechaNacimiento) {
+            alert('El campo Fecha de Nacimiento es obligatorio');
+            return;
+        }
+        
+        // Validar formato de email
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            alert('El formato del email no es válido. Debe ser usuario@dominio.com');
+            return;
+        }
+        
+        // Validar RUT (básico)
+        if (rut.length < 8) {
+            alert('El RUT debe tener al menos 8 caracteres');
+            return;
+        }
+        
+        // Crear objeto con los datos
+        const data = {
+            nombre: nombre,
+            apellido: apellido,
+            rut: rut,
+            email: email,
+            fecha_nacimiento: fechaNacimiento
+        };
+        
+        // Enviar datos al servidor
+        fetch('/api/estudiantes/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('❌ Error: ' + data.error);
+            } else {
+                alert('✅ ' + data.mensaje + '\nID: ' + data.id);
+                window.location.href = '/estudiantes/';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Ocurrió un error al guardar el estudiante');
+        });
+    });
+
+    // Formatear RUT automáticamente
+    document.getElementById('rut').addEventListener('input', function(e) {
+        let rut = this.value.replace(/\D/g, '');
+        if (rut.length > 1) {
+            let cuerpo = rut.slice(0, -1);
+            let dv = rut.slice(-1);
+            this.value = cuerpo + '-' + dv;
+        }
+    });
+</script>
+{% endblock %}

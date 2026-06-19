@@ -1,0 +1,92 @@
+<!-- templates/sesiones/lista.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-clock-fill text-info"></i> Lista de Sesiones de Clase
+    </h2>
+    <div>
+        <a href="/sesiones/crear" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Nueva Sesión
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-info">
+                    <tr>
+                        <th>ID</th>
+                        <th>Curso</th>
+                        <th>Fecha</th>
+                        <th>Hora Inicio</th>
+                        <th>Hora Fin</th>
+                        <th>Bloque Horario</th>
+                        <th>Profesor</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sesion in sesiones %}
+                    <tr>
+                        <td>{{ sesion.id }}</td>
+                        <td>
+                            <strong>{{ sesion.curso_nombre }}</strong>
+                        </td>
+                        <td>{{ sesion.fecha }}</td>
+                        <td>{{ sesion.hora_inicio }}</td>
+                        <td>{{ sesion.hora_fin }}</td>
+                        <td>
+                            {% if sesion.bloque_horario %}
+                                <span class="badge bg-primary">{{ sesion.bloque_horario }}</span>
+                            {% else %}
+                                <span class="text-muted small">No asignado</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ sesion.profesor_nombre }}</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="/sesiones/{{ sesion.id }}" 
+                                   class="btn btn-outline-info" 
+                                   title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="/sesiones/{{ sesion.id }}/editar" 
+                                   class="btn btn-outline-warning" 
+                                   title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="/sesiones/{{ sesion.id }}/cerrar" 
+                                   class="btn btn-outline-danger" 
+                                   title="Cerrar sesión">
+                                    <i class="bi bi-x-circle"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="bi bi-inbox fs-1 d-block text-muted"></i>
+                            <p class="text-muted mt-2">No hay sesiones registradas</p>
+                            <a href="/sesiones/crear" class="btn btn-success btn-sm">
+                                <i class="bi bi-plus-circle"></i> Crear primera sesión
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Contador de registros -->
+        <div class="mt-3 text-muted small">
+            <i class="bi bi-info-circle"></i> 
+            Mostrando {{ sesiones|length }} sesión(es)
+        </div>
+    </div>
+</div>
+{% endblock %}

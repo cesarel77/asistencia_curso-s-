@@ -1,0 +1,147 @@
+<!-- templates/justificaciones/detalle.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-file-earmark-text text-dark"></i> 
+        Justificación #{{ justificacion.id }}
+    </h2>
+    <div>
+        <a href="/justificaciones/" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+        <a href="/justificaciones/{{ justificacion.id }}/editar" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        {% if justificacion.estado == 'PENDIENTE' %}
+        <a href="/justificaciones/{{ justificacion.id }}/validar" class="btn btn-success">
+            <i class="bi bi-check-circle"></i> Validar
+        </a>
+        {% endif %}
+        <a href="/justificaciones/{{ justificacion.id }}/eliminar" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Eliminar
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <i class="bi bi-info-circle"></i> Datos de la Justificación
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Motivo:</div>
+                    <div class="col-9">
+                        <div class="p-2 bg-light rounded">
+                            {{ justificacion.motivo }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Documento Adjunto:</div>
+                    <div class="col-9">
+                        {% if justificacion.documento_adjunto %}
+                            <span class="badge bg-info text-dark fs-6">
+                                <i class="bi bi-file-pdf"></i> 
+                                <a href="#" class="text-decoration-none text-dark">
+                                    {{ justificacion.documento_adjunto }}
+                                </a>
+                            </span>
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> Haga clic para descargar
+                            </small>
+                        {% else %}
+                            <span class="text-muted">
+                                <i class="bi bi-file-earmark-slash"></i> No se adjuntó documento
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Fecha Documentación:</div>
+                    <div class="col-9">
+                        <span class="badge bg-primary fs-6">
+                            <i class="bi bi-calendar"></i> {{ justificacion.fecha_documentacion }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Estado:</div>
+                    <div class="col-9">
+                        {% if justificacion.estado == 'APROBADA' %}
+                            <span class="badge bg-success fs-6">
+                                <i class="bi bi-check-circle"></i> Aprobada
+                            </span>
+                        {% elif justificacion.estado == 'RECHAZADA' %}
+                            <span class="badge bg-danger fs-6">
+                                <i class="bi bi-x-circle"></i> Rechazada
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark fs-6">
+                                <i class="bi bi-clock"></i> Pendiente de validación
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Estudiante:</div>
+                    <div class="col-9">
+                        <strong>{{ justificacion.estudiante_nombre }}</strong>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Asistencia Estado:</div>
+                    <div class="col-9">
+                        <span class="badge 
+                            {% if justificacion.asistencia_estado == 'PRESENTE' %}bg-success
+                            {% elif justificacion.asistencia_estado == 'AUSENTE' %}bg-danger
+                            {% elif justificacion.asistencia_estado == 'TARDE' %}bg-warning text-dark
+                            {% else %}bg-info{% endif %}">
+                            {{ justificacion.asistencia_estado }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Fecha Sesión:</div>
+                    <div class="col-9">{{ justificacion.sesion_fecha }}</div>
+                </div>
+                {% if justificacion.curso_nombre %}
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Curso:</div>
+                    <div class="col-9">{{ justificacion.curso_nombre }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Acciones rápidas -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-lightning"></i> Acciones Rápidas
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2 d-md-flex">
+                    {% if justificacion.estado == 'PENDIENTE' %}
+                    <a href="/justificaciones/{{ justificacion.id }}/validar" class="btn btn-outline-success">
+                        <i class="bi bi-check-circle"></i> Validar Justificación
+                    </a>
+                    {% endif %}
+                    <a href="/justificaciones/{{ justificacion.id }}/editar" class="btn btn-outline-warning">
+                        <i class="bi bi-pencil"></i> Editar Justificación
+                    </a>
+                    <a href="/asistencias/{{ justificacion.id_asistencia }}" class="btn btn-outline-primary">
+                        <i class="bi bi-clipboard-check"></i> Ver Asistencia
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

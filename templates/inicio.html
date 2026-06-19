@@ -1,0 +1,195 @@
+<!-- templates/inicio.html -->
+{% extends 'base.html' %}
+ 
+{% block contenido %}
+<div class='row'>
+  <div class='col-md-12 mx-auto text-center py-5'>
+    <h1 class='display-5 fw-bold text-primary'>
+      <i class="bi bi-calendar-check"></i> Asistencia de cursos
+    </h1>
+    
+    <!-- DASHBOARD - Tarjetas de colores (arriba) -->
+    <div class='row mt-4 g-3'>
+      <div class='col-md-3'>
+        <div class='card bg-primary text-white h-100'>
+          <div class='card-body text-center'>
+            <i class="bi bi-people-fill fs-1"></i>
+            <h2 class='mt-2'>{{ total_estudiantes|default(0) }}</h2>
+            <p class='mb-0'>Estudiantes</p>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card bg-success text-white h-100'>
+          <div class='card-body text-center'>
+            <i class="bi bi-book-fill fs-1"></i>
+            <h2 class='mt-2'>{{ total_cursos|default(0) }}</h2>
+            <p class='mb-0'>Cursos</p>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card bg-warning text-white h-100'>
+          <div class='card-body text-center'>
+            <i class="bi bi-person-badge-fill fs-1"></i>
+            <h2 class='mt-2'>{{ total_profesores|default(0) }}</h2>
+            <p class='mb-0'>Profesores</p>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card bg-danger text-white h-100'>
+          <div class='card-body text-center'>
+            <i class="bi bi-clipboard-check-fill fs-1"></i>
+            <h2 class='mt-2'>{{ total_asistencias|default(0) }}</h2>
+            <p class='mb-0'>Asistencias</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD - Segunda fila de tarjetas de colores -->
+    <div class='row mt-3 g-3'>
+      <div class='col-md-3'>
+        <div class='card bg-info text-white h-100'>
+          <div class='card-body text-center'>
+            <i class="bi bi-clock-fill fs-1"></i>
+            <h2 class='mt-2'>{{ total_sesiones|default(0) }}</h2>
+            <p class='mb-0'>Sesiones</p>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card bg-secondary text-white h-100'>
+          <div class='card-body text-center'>
+            <i class="bi bi-calendar-range-fill fs-1"></i>
+            <h2 class='mt-2'>{{ total_periodos|default(0) }}</h2>
+            <p class='mb-0'>Periodos</p>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card bg-dark text-white h-100'>
+          <div class='card-body text-center'>
+            <i class="bi bi-file-earmark-text-fill fs-1"></i>
+            <h2 class='mt-2'>{{ total_justificaciones|default(0) }}</h2>
+            <p class='mb-0'>Justificaciones</p>
+          </div>
+        </div>
+      </div>
+      <!-- La cuarta tarjeta de colores ya no tiene "Total Registros" -->
+      <div class='col-md-3'>
+        <div class='card bg-primary text-white h-100'>
+          <div class='card-body text-center'>
+            <i class="bi bi-graph-up-arrow fs-1"></i>
+            <h2 class='mt-2'>{{ total_estudiantes|default(0) }}</h2>
+            <p class='mb-0'>Activos</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjetas de acceso rápido (abajo) -->
+    <div class='row mt-4 g-3'>
+      <div class='col-md-3'>
+        <div class='card border-primary h-100'>
+          <div class='card-body text-center'>
+            <h5 class='card-title'>👨‍🎓 Estudiantes</h5>
+            <p class='card-text text-muted small'>{{ total_estudiantes|default(0) }} registrados</p>
+            <a href='/estudiantes/' class='btn btn-outline-primary btn-sm'>Ver estudiantes</a>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card border-success h-100'>
+          <div class='card-body text-center'>
+            <h5 class='card-title'>📚 Cursos</h5>
+            <p class='card-text text-muted small'>{{ total_cursos|default(0) }} activos</p>
+            <a href='/cursos/' class='btn btn-outline-success btn-sm'>Ver cursos</a>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card border-warning h-100'>
+          <div class='card-body text-center'>
+            <h5 class='card-title'>👨‍🏫 Profesores</h5>
+            <p class='card-text text-muted small'>{{ total_profesores|default(0) }} registrados</p>
+            <a href='/profesores/' class='btn btn-outline-warning btn-sm'>Ver profesores</a>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card border-danger h-100'>
+          <div class='card-body text-center'>
+            <h5 class='card-title'>✅ Asistencias</h5>
+            <p class='card-text text-muted small'>{{ total_asistencias|default(0) }} registradas</p>
+            <a href='/asistencias/' class='btn btn-outline-danger btn-sm'>Ver asistencias</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segunda fila de tarjetas de acceso rápido -->
+    <div class='row mt-3 g-3'>
+      <div class='col-md-3'>
+        <div class='card border-info h-100'>
+          <div class='card-body text-center'>
+            <h5 class='card-title'>🕐 Sesiones</h5>
+            <p class='card-text text-muted small'>{{ total_sesiones|default(0) }} programadas</p>
+            <a href='/sesiones/' class='btn btn-outline-info btn-sm'>Ver sesiones</a>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card border-secondary h-100'>
+          <div class='card-body text-center'>
+            <h5 class='card-title'>📅 Periodos</h5>
+            <p class='card-text text-muted small'>{{ total_periodos|default(0) }} registrados</p>
+            <a href='/periodos/' class='btn btn-outline-secondary btn-sm'>Ver periodos</a>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card border-dark h-100'>
+          <div class='card-body text-center'>
+            <h5 class='card-title'>📄 Justificaciones</h5>
+            <p class='card-text text-muted small'>{{ total_justificaciones|default(0) }} registradas</p>
+            <a href='/justificaciones/' class='btn btn-outline-dark btn-sm'>Ver justificaciones</a>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class='card border-primary h-100'>
+          <div class='card-body text-center'>
+            <h5 class='card-title'>🔌 API JSON</h5>
+            <p class='card-text text-muted small'>Endpoints disponibles</p>
+            <a href='/api/resumen/' class='btn btn-outline-primary btn-sm'>Ver API</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información del sistema -->
+    <div class='row mt-4'>
+      <div class='col-md-6 mx-auto'>
+        <div class="card border-0 bg-light">
+          <div class="card-body">
+            <p class="text-muted mb-0">
+              <i class="bi bi-person"></i> <strong>Estudiante:</strong> Cesar Oñate H.
+            </p>
+            <p class="text-muted mb-0">
+              <i class="bi bi-mortarboard"></i> <strong>Carrera:</strong> TNS Informática
+            </p>
+            <p class="text-muted mb-0">
+              <i class="bi bi-code-square"></i> <strong>Ramo:</strong> Programación II
+            </p>
+            <p class="text-muted mb-0">
+              <i class="bi bi-calendar3"></i> <strong>Fecha:</strong> 12 de junio 2026
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

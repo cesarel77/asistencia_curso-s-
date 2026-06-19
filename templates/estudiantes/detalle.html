@@ -1,0 +1,58 @@
+<!-- templates/estudiantes/detalle.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-person-circle text-primary"></i> 
+        {{ estudiante.nombre }} {{ estudiante.apellido }}
+    </h2>
+    <div>
+        <a href="/estudiantes/" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+        <a href="/estudiantes/{{ estudiante.id }}/editar" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        <a href="/estudiantes/{{ estudiante.id }}/eliminar" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Eliminar
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-person-badge"></i> Datos del Estudiante
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Nombre:</div>
+                    <div class="col-9">{{ estudiante.nombre }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Apellido:</div>
+                    <div class="col-9">{{ estudiante.apellido }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">RUT:</div>
+                    <div class="col-9">{{ estudiante.rut }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Email:</div>
+                    <div class="col-9">
+                        <a href="mailto:{{ estudiante.email }}" class="text-decoration-none">
+                            {{ estudiante.email }}
+                        </a>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Fecha Nac.:</div>
+                    <div class="col-9">{{ estudiante.fecha_nacimiento }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

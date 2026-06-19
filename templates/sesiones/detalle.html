@@ -1,0 +1,103 @@
+<!-- templates/sesiones/detalle.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-clock text-info"></i> 
+        Sesión del {{ sesion.fecha }}
+    </h2>
+    <div>
+        <a href="/sesiones/" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+        <a href="/sesiones/{{ sesion.id }}/editar" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        <a href="/sesiones/{{ sesion.id }}/cerrar" class="btn btn-danger">
+            <i class="bi bi-x-circle"></i> Cerrar Sesión
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-info-circle"></i> Datos de la Sesión
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Fecha:</div>
+                    <div class="col-9">
+                        <span class="badge bg-primary fs-6">{{ sesion.fecha }}</span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Hora Inicio:</div>
+                    <div class="col-9">{{ sesion.hora_inicio }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Hora Fin:</div>
+                    <div class="col-9">{{ sesion.hora_fin }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Bloque Horario:</div>
+                    <div class="col-9">
+                        {% if sesion.bloque_horario %}
+                            <span class="badge bg-primary fs-6">{{ sesion.bloque_horario }}</span>
+                        {% else %}
+                            <span class="text-muted">No asignado</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Curso:</div>
+                    <div class="col-9">
+                        <strong>{{ sesion.curso_nombre }}</strong>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Profesor:</div>
+                    <div class="col-9">{{ sesion.profesor_nombre }}</div>
+                </div>
+                
+                {% if total_asistencias is defined %}
+                <hr>
+                <div class="row mb-3">
+                    <div class="col-3 fw-bold">Total Asistencias:</div>
+                    <div class="col-9">
+                        <span class="badge bg-success fs-6">
+                            <i class="bi bi-people"></i> {{ total_asistencias }} registros
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Acciones rápidas -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-lightning"></i> Acciones Rápidas
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="/asistencias/registrar_individual" class="btn btn-outline-primary">
+                        <i class="bi bi-clipboard-plus"></i> Registrar Asistencia
+                    </a>
+                    <a href="/asistencias/sesion/{{ sesion.id }}" class="btn btn-outline-info">
+                        <i class="bi bi-list-ul"></i> Ver Asistencias
+                    </a>
+                    <a href="/sesiones/{{ sesion.id }}/cerrar" class="btn btn-outline-danger">
+                        <i class="bi bi-x-circle"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
