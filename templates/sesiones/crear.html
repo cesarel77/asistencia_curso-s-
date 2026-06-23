@@ -1,0 +1,255 @@
+<!-- templates/sesiones/crear.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-plus-circle"></i> Crear Nueva Sesión de Clase
+            </div>
+            <div class="card-body">
+                <form action="/api/sesiones/" method="POST" id="formSesion">
+                    <!-- Curso -->
+                    <div class="mb-3">
+                        <label for="id_curso" class="form-label fw-bold">
+                            <i class="bi bi-book"></i> Curso <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="id_curso" name="id_curso" required>
+                            <option value="">Seleccione un curso</option>
+                            {% for curso in cursos %}
+                            <option value="{{ curso.id }}">{{ curso.nombre_curso }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Seleccione el curso al que pertenece la sesión.</div>
+                    </div>
+
+                    <!-- Profesor -->
+                    <div class="mb-3">
+                        <label for="id_profesor" class="form-label fw-bold">
+                            <i class="bi bi-person-badge"></i> Profesor <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="id_profesor" name="id_profesor" required>
+                            <option value="">Seleccione un profesor</option>
+                            {% for profesor in profesores %}
+                            <option value="{{ profesor.id }}">{{ profesor.nombre }} {{ profesor.apellido }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Seleccione el profesor que impartirá la sesión.</div>
+                    </div>
+
+                    <!-- Fecha -->
+                    <div class="mb-3">
+                        <label for="fecha" class="form-label fw-bold">
+                            <i class="bi bi-calendar"></i> Fecha <span class="text-danger">*</span>
+                        </label>
+                        <input type="date" 
+                               class="form-control" 
+                               id="fecha" 
+                               name="fecha" 
+                               required>
+                        <div class="form-text">La fecha no puede ser anterior a la fecha actual.</div>
+                    </div>
+
+                    <!-- Hora Inicio -->
+                    <div class="mb-3">
+                        <label for="hora_inicio" class="form-label fw-bold">
+                            <i class="bi bi-clock"></i> Hora de Inicio <span class="text-danger">*</span>
+                        </label>
+                        <input type="time" 
+                               class="form-control" 
+                               id="hora_inicio" 
+                               name="hora_inicio" 
+                               required>
+                        <div class="form-text">La hora de inicio debe ser menor que la hora de fin.</div>
+                    </div>
+
+                    <!-- Hora Fin -->
+                    <div class="mb-3">
+                        <label for="hora_fin" class="form-label fw-bold">
+                            <i class="bi bi-clock"></i> Hora de Fin <span class="text-danger">*</span>
+                        </label>
+                        <input type="time" 
+                               class="form-control" 
+                               id="hora_fin" 
+                               name="hora_fin" 
+                               required>
+                        <div class="form-text">La hora de fin debe ser mayor que la hora de inicio.</div>
+                    </div>
+
+                    <!-- Bloque Horario -->
+                    <div class="mb-3">
+                        <label for="bloque_horario" class="form-label fw-bold">
+                            <i class="bi bi-grid"></i> Bloque Horario
+                        </label>
+                        <select class="form-select" id="bloque_horario" name="bloque_horario">
+                            <option value="">Seleccione un bloque (opcional)</option>
+                            <option value="1° BLOQUE">1° BLOQUE</option>
+                            <option value="2° BLOQUE">2° BLOQUE</option>
+                            <option value="3° BLOQUE">3° BLOQUE</option>
+                            <option value="4° BLOQUE">4° BLOQUE</option>
+                            <option value="5° BLOQUE">5° BLOQUE</option>
+                        </select>
+                        <div class="form-text">Seleccione el bloque horario de la sesión (opcional).</div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/sesiones/" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Guardar Sesión
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-info-circle"></i> Información
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-asterisk text-danger"></i> Los campos marcados con 
+                    <span class="text-danger">*</span> son obligatorios.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-check-circle text-success"></i> Una vez creada, la sesión podrá registrar 
+                    asistencias de los estudiantes.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-lightbulb text-warning"></i> La hora de inicio debe ser menor que la hora 
+                    de fin para que la sesión sea válida.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('formSesion').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validaciones básicas
+        const idCurso = document.getElementById('id_curso').value;
+        const idProfesor = document.getElementById('id_profesor').value;
+        const fecha = document.getElementById('fecha').value;
+        const horaInicio = document.getElementById('hora_inicio').value;
+        const horaFin = document.getElementById('hora_fin').value;
+        const bloqueHorario = document.getElementById('bloque_horario').value;
+        
+        // Validar campos obligatorios
+        if (!idCurso) {
+            alert('El campo Curso es obligatorio');
+            return;
+        }
+        if (!idProfesor) {
+            alert('El campo Profesor es obligatorio');
+            return;
+        }
+        if (!fecha) {
+            alert('El campo Fecha es obligatorio');
+            return;
+        }
+        if (!horaInicio) {
+            alert('El campo Hora de Inicio es obligatorio');
+            return;
+        }
+        if (!horaFin) {
+            alert('El campo Hora de Fin es obligatorio');
+            return;
+        }
+        
+        // Validar que la fecha no sea anterior a hoy
+        const fechaHoy = new Date().toISOString().split('T')[0];
+        if (fecha < fechaHoy) {
+            alert('La fecha de la sesión no puede ser anterior a la fecha actual');
+            return;
+        }
+        
+        // Validar que hora_inicio sea menor que hora_fin
+        if (horaInicio >= horaFin) {
+            alert('La hora de inicio debe ser menor que la hora de fin');
+            return;
+        }
+        
+        // Crear objeto con los datos
+        const data = {
+            id_curso: parseInt(idCurso),
+            id_profesor: parseInt(idProfesor),
+            fecha: fecha,
+            hora_inicio: horaInicio,
+            hora_fin: horaFin,
+            bloque_horario: bloqueHorario || null
+        };
+        
+        // Enviar datos al servidor
+        fetch('/api/sesiones/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('❌ Error: ' + data.error);
+            } else {
+                alert('✅ ' + data.mensaje + '\nID: ' + data.id);
+                window.location.href = '/sesiones/';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Ocurrió un error al guardar la sesión');
+        });
+    });
+
+    // Establecer fecha actual por defecto
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInput = document.getElementById('fecha');
+        const fechaHoy = new Date().toISOString().split('T')[0];
+        fechaInput.value = fechaHoy;
+    });
+
+    // Validar horas en tiempo real
+    document.getElementById('hora_inicio').addEventListener('change', validarHoras);
+    document.getElementById('hora_fin').addEventListener('change', validarHoras);
+
+    function validarHoras() {
+        const horaInicio = document.getElementById('hora_inicio').value;
+        const horaFin = document.getElementById('hora_fin').value;
+        
+        if (horaInicio && horaFin && horaInicio >= horaFin) {
+            document.getElementById('hora_fin').classList.add('is-invalid');
+        } else {
+            document.getElementById('hora_fin').classList.remove('is-invalid');
+        }
+    }
+
+    // Cargar datos del curso seleccionado
+    document.getElementById('id_curso').addEventListener('change', function() {
+        const cursoId = this.value;
+        if (cursoId) {
+            // Opcional: Cargar el profesor del curso automáticamente
+            fetch('/api/cursos/' + cursoId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id_profesor_jefe) {
+                        // Si el curso tiene profesor jefe, seleccionarlo automáticamente
+                        const selectProfesor = document.getElementById('id_profesor');
+                        const option = selectProfesor.querySelector('option[value="' + data.id_profesor_jefe + '"]');
+                        if (option) {
+                            selectProfesor.value = data.id_profesor_jefe;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+</script>
+{% endblock %}

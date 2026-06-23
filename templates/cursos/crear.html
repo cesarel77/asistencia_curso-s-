@@ -1,0 +1,249 @@
+<!-- templates/cursos/crear.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-plus-circle"></i> Crear Nuevo Curso
+            </div>
+            <div class="card-body">
+                <form action="/api/cursos/" method="POST" id="formCurso">
+                    <!-- Nombre del Curso -->
+                    <div class="mb-3">
+                        <label for="nombre_curso" class="form-label fw-bold">
+                            <i class="bi bi-book"></i> Nombre del Curso <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="nombre_curso" 
+                               name="nombre_curso" 
+                               placeholder="Ej: 3° Básico A"
+                               required
+                               maxlength="100">
+                        <div class="form-text">Máximo 100 caracteres.</div>
+                    </div>
+
+                    <!-- Nivel -->
+                    <div class="mb-3">
+                        <label for="nivel" class="form-label fw-bold">
+                            <i class="bi bi-bar-chart"></i> Nivel <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="nivel" name="nivel" required>
+                            <option value="">Seleccione un nivel</option>
+                            <option value="Pre-kinder">Pre-kinder</option>
+                            <option value="Kinder">Kinder</option>
+                            <option value="1° básico">1° básico</option>
+                            <option value="2° básico">2° básico</option>
+                            <option value="3° básico">3° básico</option>
+                            <option value="4° básico">4° básico</option>
+                            <option value="5° básico">5° básico</option>
+                            <option value="6° básico">6° básico</option>
+                            <option value="7° básico">7° básico</option>
+                            <option value="8° básico">8° básico</option>
+                            <option value="1° medio">1° medio</option>
+                            <option value="2° medio">2° medio</option>
+                            <option value="3° medio">3° medio</option>
+                            <option value="4° medio">4° medio</option>
+                        </select>
+                        <div class="form-text">Seleccione el nivel educativo del curso.</div>
+                    </div>
+
+                    <!-- Letra -->
+                    <div class="mb-3">
+                        <label for="letra" class="form-label fw-bold">
+                            <i class="bi bi-fonts"></i> Letra <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="letra" name="letra" required>
+                            <option value="">Seleccione una letra</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="F">F</option>
+                            <option value="G">G</option>
+                            <option value="H">H</option>
+                            <option value="I">I</option>
+                            <option value="J">J</option>
+                            <option value="K">K</option>
+                            <option value="L">L</option>
+                            <option value="M">M</option>
+                            <option value="N">N</option>
+                            <option value="Ñ">Ñ</option>
+                            <option value="O">O</option>
+                            <option value="P">P</option>
+                            <option value="Q">Q</option>
+                            <option value="R">R</option>
+                            <option value="S">S</option>
+                            <option value="T">T</option>
+                            <option value="U">U</option>
+                            <option value="V">V</option>
+                            <option value="W">W</option>
+                            <option value="X">X</option>
+                            <option value="Y">Y</option>
+                            <option value="Z">Z</option>
+                        </select>
+                        <div class="form-text">Seleccione la letra identificadora del curso (máximo 1 carácter).</div>
+                    </div>
+
+                    <!-- Año Lectivo -->
+                    <div class="mb-3">
+                        <label for="año_lectivo" class="form-label fw-bold">
+                            <i class="bi bi-calendar"></i> Año Lectivo <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" 
+                               class="form-control" 
+                               id="año_lectivo" 
+                               name="año_lectivo" 
+                               placeholder="Ej: 2026"
+                               required
+                               min="2000"
+                               max="2027">
+                        <div class="form-text">El año debe estar entre 2000 y 2027.</div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/cursos/" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Guardar Curso
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-info-circle"></i> Información
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-asterisk text-danger"></i> Los campos marcados con 
+                    <span class="text-danger">*</span> son obligatorios.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-check-circle text-success"></i> Una vez creado, el curso podrá tener 
+                    estudiantes asignados y sesiones de clase programadas.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-lightbulb text-warning"></i> El profesor jefe se puede asignar 
+                    después de crear el curso.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('formCurso').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validaciones básicas
+        const nombreCurso = document.getElementById('nombre_curso').value.trim();
+        const nivel = document.getElementById('nivel').value;
+        const letra = document.getElementById('letra').value;
+        const añoLectivo = document.getElementById('año_lectivo').value;
+        
+        // Validar campos obligatorios
+        if (!nombreCurso) {
+            alert('El campo Nombre del Curso es obligatorio');
+            return;
+        }
+        if (!nivel) {
+            alert('El campo Nivel es obligatorio');
+            return;
+        }
+        if (!letra) {
+            alert('El campo Letra es obligatorio');
+            return;
+        }
+        if (!añoLectivo) {
+            alert('El campo Año Lectivo es obligatorio');
+            return;
+        }
+        
+        // Validar año lectivo
+        const año = parseInt(añoLectivo);
+        if (año < 2000 || año > 2027) {
+            alert('El año lectivo debe estar entre 2000 y 2027');
+            return;
+        }
+        
+        // Crear objeto con los datos
+        const data = {
+            nombre_curso: nombreCurso,
+            nivel: nivel,
+            letra: letra,
+            año_lectivo: parseInt(añoLectivo)
+        };
+        
+        // Enviar datos al servidor
+        fetch('/api/cursos/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('❌ Error: ' + data.error);
+            } else {
+                alert('✅ ' + data.mensaje + '\nID: ' + data.id);
+                window.location.href = '/cursos/';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Ocurrió un error al guardar el curso');
+        });
+    });
+
+    // Validar que el año sea un número válido
+    document.getElementById('año_lectivo').addEventListener('input', function(e) {
+        const valor = parseInt(this.value);
+        if (this.value && (valor < 2000 || valor > 2027)) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Generar nombre del curso automáticamente
+    document.getElementById('nombre_curso').addEventListener('focus', function() {
+        const nivel = document.getElementById('nivel').value;
+        const letra = document.getElementById('letra').value;
+        const año = document.getElementById('año_lectivo').value;
+        
+        if (nivel && letra && año) {
+            // Si ya están seleccionados, sugerir el nombre
+            const nombreSugerido = nivel + ' ' + letra;
+            if (!this.value || this.value === '') {
+                this.value = nombreSugerido;
+            }
+        }
+    });
+
+    // Actualizar nombre sugerido al cambiar nivel, letra o año
+    document.getElementById('nivel').addEventListener('change', sugerirNombre);
+    document.getElementById('letra').addEventListener('change', sugerirNombre);
+    document.getElementById('año_lectivo').addEventListener('change', sugerirNombre);
+
+    function sugerirNombre() {
+        const nivel = document.getElementById('nivel').value;
+        const letra = document.getElementById('letra').value;
+        const nombreInput = document.getElementById('nombre_curso');
+        
+        if (nivel && letra && !nombreInput.value) {
+            nombreInput.value = nivel + ' ' + letra;
+        }
+    }
+</script>
+{% endblock %}

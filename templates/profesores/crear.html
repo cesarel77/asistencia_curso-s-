@@ -1,0 +1,219 @@
+<!-- templates/profesores/crear.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <i class="bi bi-person-plus"></i> Crear Nuevo Profesor
+            </div>
+            <div class="card-body">
+                <form action="/api/profesores/" method="POST" id="formProfesor">
+                    <!-- Nombre -->
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label fw-bold">
+                            <i class="bi bi-person"></i> Nombre <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="nombre" 
+                               name="nombre" 
+                               placeholder="Ingrese el nombre del profesor"
+                               required
+                               maxlength="100">
+                        <div class="form-text">Máximo 100 caracteres.</div>
+                    </div>
+
+                    <!-- Apellido -->
+                    <div class="mb-3">
+                        <label for="apellido" class="form-label fw-bold">
+                            <i class="bi bi-person"></i> Apellido <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="apellido" 
+                               name="apellido" 
+                               placeholder="Ingrese el apellido del profesor"
+                               required
+                               maxlength="100">
+                        <div class="form-text">Máximo 100 caracteres.</div>
+                    </div>
+
+                    <!-- RUT -->
+                    <div class="mb-3">
+                        <label for="rut" class="form-label fw-bold">
+                            <i class="bi bi-credit-card"></i> RUT <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="rut" 
+                               name="rut" 
+                               placeholder="Ej: 11111111-1"
+                               required
+                               maxlength="12">
+                        <div class="form-text">Formato: 11111111-1 (sin puntos).</div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-bold">
+                            <i class="bi bi-envelope"></i> Email <span class="text-danger">*</span>
+                        </label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="email" 
+                               name="email" 
+                               placeholder="Ej: profesor@colegio.cl"
+                               required
+                               maxlength="200">
+                        <div class="form-text">Formato: usuario@dominio.com</div>
+                    </div>
+
+                    <!-- Especialidad -->
+                    <div class="mb-3">
+                        <label for="especialidad" class="form-label fw-bold">
+                            <i class="bi bi-trophy"></i> Especialidad <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="especialidad" 
+                               name="especialidad" 
+                               placeholder="Ej: Matemáticas"
+                               required
+                               maxlength="300">
+                        <div class="form-text">Máximo 300 caracteres.</div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/profesores/" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Guardar Profesor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-info-circle"></i> Información
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-asterisk text-danger"></i> Los campos marcados con 
+                    <span class="text-danger">*</span> son obligatorios.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-check-circle text-success"></i> Una vez creado, el profesor podrá ser 
+                    asignado como jefe de curso y dictar sesiones de clase.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-lightbulb text-warning"></i> La especialidad debe ser la materia principal 
+                    que enseña el profesor.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('formProfesor').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validaciones básicas
+        const nombre = document.getElementById('nombre').value.trim();
+        const apellido = document.getElementById('apellido').value.trim();
+        const rut = document.getElementById('rut').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const especialidad = document.getElementById('especialidad').value.trim();
+        
+        // Validar campos obligatorios
+        if (!nombre) {
+            alert('El campo Nombre es obligatorio');
+            return;
+        }
+        if (!apellido) {
+            alert('El campo Apellido es obligatorio');
+            return;
+        }
+        if (!rut) {
+            alert('El campo RUT es obligatorio');
+            return;
+        }
+        if (!email) {
+            alert('El campo Email es obligatorio');
+            return;
+        }
+        if (!especialidad) {
+            alert('El campo Especialidad es obligatorio');
+            return;
+        }
+        
+        // Validar formato de email
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            alert('El formato del email no es válido. Debe ser usuario@dominio.com');
+            return;
+        }
+        
+        // Validar RUT (básico)
+        if (rut.length < 8) {
+            alert('El RUT debe tener al menos 8 caracteres');
+            return;
+        }
+        
+        // Crear objeto con los datos
+        const data = {
+            nombre: nombre,
+            apellido: apellido,
+            rut: rut,
+            email: email,
+            especialidad: especialidad
+        };
+        
+        // Enviar datos al servidor
+        fetch('/api/profesores/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('❌ Error: ' + data.error);
+            } else {
+                alert('✅ ' + data.mensaje + '\nID: ' + data.id);
+                window.location.href = '/profesores/';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Ocurrió un error al guardar el profesor');
+        });
+    });
+
+    // Formatear RUT automáticamente
+    document.getElementById('rut').addEventListener('input', function(e) {
+        let rut = this.value.replace(/\D/g, '');
+        if (rut.length > 1) {
+            let cuerpo = rut.slice(0, -1);
+            let dv = rut.slice(-1);
+            this.value = cuerpo + '-' + dv;
+        }
+    });
+
+    // Auto-completar email con el dominio si está vacío
+    document.getElementById('email').addEventListener('blur', function() {
+        if (this.value && !this.value.includes('@')) {
+            this.value = this.value + '@colegio.cl';
+        }
+    });
+</script>
+{% endblock %}

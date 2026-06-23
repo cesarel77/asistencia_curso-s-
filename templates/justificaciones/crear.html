@@ -1,0 +1,229 @@
+<!-- templates/justificaciones/crear.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <i class="bi bi-plus-circle"></i> Crear Nueva Justificación
+            </div>
+            <div class="card-body">
+                <form action="/api/justificaciones/" method="POST" id="formJustificacion">
+                    <!-- Asistencia -->
+                    <div class="mb-3">
+                        <label for="id_asistencia" class="form-label fw-bold">
+                            <i class="bi bi-clipboard-check"></i> Asistencia a Justificar <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="id_asistencia" name="id_asistencia" required>
+                            <option value="">Seleccione una asistencia</option>
+                            {% for asistencia in asistencias %}
+                            <option value="{{ asistencia.id }}">
+                                {{ asistencia.estudiante_nombre }} - {{ asistencia.sesion_fecha }} 
+                                ({{ asistencia.estado }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Seleccione el registro de asistencia que desea justificar.</div>
+                    </div>
+
+                    <!-- Motivo -->
+                    <div class="mb-3">
+                        <label for="motivo" class="form-label fw-bold">
+                            <i class="bi bi-file-text"></i> Motivo <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" 
+                                  id="motivo" 
+                                  name="motivo" 
+                                  rows="3" 
+                                  placeholder="Ingrese el motivo de la justificación"
+                                  required
+                                  maxlength="200"></textarea>
+                        <div class="form-text">Máximo 200 caracteres. Describa claramente el motivo.</div>
+                    </div>
+
+                    <!-- Documento Adjunto -->
+                    <div class="mb-3">
+                        <label for="documento_adjunto" class="form-label fw-bold">
+                            <i class="bi bi-paperclip"></i> Documento Adjunto
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="documento_adjunto" 
+                               name="documento_adjunto" 
+                               placeholder="Ej: licencia_medica.pdf"
+                               maxlength="255">
+                        <div class="form-text">Nombre del documento adjunto (máximo 255 caracteres).</div>
+                    </div>
+
+                    <!-- Fecha de Documentación -->
+                    <div class="mb-3">
+                        <label for="fecha_documentacion" class="form-label fw-bold">
+                            <i class="bi bi-calendar"></i> Fecha de Documentación <span class="text-danger">*</span>
+                        </label>
+                        <input type="date" 
+                               class="form-control" 
+                               id="fecha_documentacion" 
+                               name="fecha_documentacion" 
+                               required>
+                        <div class="form-text">Fecha en que se emite o presenta la documentación.</div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/justificaciones/" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Guardar Justificación
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-info-circle"></i> Información
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-asterisk text-danger"></i> Los campos marcados con 
+                    <span class="text-danger">*</span> son obligatorios.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-check-circle text-success"></i> Una vez creada, la justificación quedará 
+                    en estado <strong>Pendiente</strong> hasta que sea validada por un profesor.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-lightbulb text-warning"></i> Solo se puede crear una justificación por cada 
+                    registro de asistencia.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-file-pdf text-danger"></i> Si tiene un documento físico, indique el nombre 
+                    del archivo en el campo "Documento Adjunto".
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('formJustificacion').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validaciones básicas
+        const idAsistencia = document.getElementById('id_asistencia').value;
+        const motivo = document.getElementById('motivo').value.trim();
+        const documentoAdjunto = document.getElementById('documento_adjunto').value.trim();
+        const fechaDocumentacion = document.getElementById('fecha_documentacion').value;
+        
+        // Validar campos obligatorios
+        if (!idAsistencia) {
+            alert('El campo Asistencia es obligatorio');
+            return;
+        }
+        if (!motivo) {
+            alert('El campo Motivo es obligatorio');
+            return;
+        }
+        if (!fechaDocumentacion) {
+            alert('El campo Fecha de Documentación es obligatorio');
+            return;
+        }
+        
+        // Validar motivo no muy corto
+        if (motivo.length < 10) {
+            alert('El motivo debe tener al menos 10 caracteres');
+            return;
+        }
+        
+        // Validar que fecha_documentacion no sea mayor a hoy
+        const hoy = new Date().toISOString().split('T')[0];
+        if (fechaDocumentacion > hoy) {
+            alert('La fecha de documentación no puede ser mayor a la fecha actual');
+            return;
+        }
+        
+        // Crear objeto con los datos
+        const data = {
+            id_asistencia: parseInt(idAsistencia),
+            motivo: motivo,
+            documento_adjunto: documentoAdjunto || null,
+            fecha_documentacion: fechaDocumentacion
+        };
+        
+        // Enviar datos al servidor
+        fetch('/api/justificaciones/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('❌ Error: ' + data.error);
+            } else {
+                alert('✅ ' + data.mensaje + '\nID: ' + data.id);
+                window.location.href = '/justificaciones/';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Ocurrió un error al guardar la justificación');
+        });
+    });
+
+    // Establecer fecha actual por defecto
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInput = document.getElementById('fecha_documentacion');
+        const fechaHoy = new Date().toISOString().split('T')[0];
+        fechaInput.value = fechaHoy;
+        
+        // Filtrar asistencias que ya tienen justificación
+        // Nota: Esto se maneja mejor desde el backend
+    });
+
+    // Mostrar información de la asistencia seleccionada
+    document.getElementById('id_asistencia').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value) {
+            const texto = selectedOption.text;
+            // Mostrar información adicional en la interfaz
+            const infoDiv = document.getElementById('infoAsistencia');
+            if (infoDiv) {
+                infoDiv.innerHTML = '<div class="alert alert-light mt-2">' +
+                    '<i class="bi bi-info-circle"></i> <strong>Asistencia seleccionada:</strong> ' + texto +
+                    '</div>';
+            }
+        }
+    });
+
+    // Contador de caracteres para el motivo
+    document.getElementById('motivo').addEventListener('input', function() {
+        const maxLength = 200;
+        const currentLength = this.value.length;
+        const counter = document.getElementById('contadorMotivo');
+        
+        if (!counter) {
+            const counterDiv = document.createElement('div');
+            counterDiv.id = 'contadorMotivo';
+            counterDiv.className = 'form-text text-end small';
+            this.parentNode.appendChild(counterDiv);
+        }
+        
+        const counterElement = document.getElementById('contadorMotivo');
+        const remaining = maxLength - currentLength;
+        counterElement.textContent = remaining + ' caracteres restantes';
+        
+        if (remaining < 20) {
+            counterElement.style.color = 'red';
+        } else {
+            counterElement.style.color = '#6c757d';
+        }
+    });
+</script>
+{% endblock %}

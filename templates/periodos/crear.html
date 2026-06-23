@@ -1,0 +1,213 @@
+<!-- templates/periodos/crear.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <i class="bi bi-plus-circle"></i> Crear Nuevo Período Académico
+            </div>
+            <div class="card-body">
+                <form action="/api/periodos/" method="POST" id="formPeriodo">
+                    <!-- Fecha de Inicio -->
+                    <div class="mb-3">
+                        <label for="fecha_inicio" class="form-label fw-bold">
+                            <i class="bi bi-calendar-start"></i> Fecha de Inicio <span class="text-danger">*</span>
+                        </label>
+                        <input type="date" 
+                               class="form-control" 
+                               id="fecha_inicio" 
+                               name="fecha_inicio" 
+                               required>
+                        <div class="form-text">Fecha de inicio del período académico.</div>
+                    </div>
+
+                    <!-- Fecha de Fin -->
+                    <div class="mb-3">
+                        <label for="fecha_fin" class="form-label fw-bold">
+                            <i class="bi bi-calendar-end"></i> Fecha de Fin <span class="text-danger">*</span>
+                        </label>
+                        <input type="date" 
+                               class="form-control" 
+                               id="fecha_fin" 
+                               name="fecha_fin" 
+                               required>
+                        <div class="form-text">Fecha de término del período académico.</div>
+                    </div>
+
+                    <!-- Activo -->
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" 
+                                   class="form-check-input" 
+                                   id="activo" 
+                                   name="activo" 
+                                   value="true">
+                            <label class="form-check-label fw-bold" for="activo">
+                                <i class="bi bi-check-circle"></i> Activar este período
+                            </label>
+                        </div>
+                        <div class="form-text">Si activa, los demás períodos serán desactivados automáticamente.</div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/periodos/" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Guardar Período
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-info-circle"></i> Información
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-asterisk text-danger"></i> Los campos marcados con 
+                    <span class="text-danger">*</span> son obligatorios.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-check-circle text-success"></i> Una vez creado, el período podrá tener 
+                    cursos asignados.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-lightbulb text-warning"></i> Solo puede existir un período activo a la vez. 
+                    Al activar uno, los demás se desactivarán automáticamente.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-clock text-primary"></i> La duración del período se calcula automáticamente 
+                    en días.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('formPeriodo').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validaciones básicas
+        const fechaInicio = document.getElementById('fecha_inicio').value;
+        const fechaFin = document.getElementById('fecha_fin').value;
+        const activo = document.getElementById('activo').checked;
+        
+        // Validar campos obligatorios
+        if (!fechaInicio) {
+            alert('El campo Fecha de Inicio es obligatorio');
+            return;
+        }
+        if (!fechaFin) {
+            alert('El campo Fecha de Fin es obligatorio');
+            return;
+        }
+        
+        // Validar que fecha_inicio sea menor que fecha_fin
+        if (fechaInicio >= fechaFin) {
+            alert('La fecha de inicio debe ser menor que la fecha de fin');
+            return;
+        }
+        
+        // Crear objeto con los datos
+        const data = {
+            fecha_inicio: fechaInicio,
+            fecha_fin: fechaFin,
+            activo: activo
+        };
+        
+        // Enviar datos al servidor
+        fetch('/api/periodos/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('❌ Error: ' + data.error);
+            } else {
+                alert('✅ ' + data.mensaje + '\nID: ' + data.id);
+                window.location.href = '/periodos/';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Ocurrió un error al guardar el período');
+        });
+    });
+
+    // Establecer fechas por defecto
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInicioInput = document.getElementById('fecha_inicio');
+        const fechaFinInput = document.getElementById('fecha_fin');
+        
+        const fechaHoy = new Date();
+        const añoActual = fechaHoy.getFullYear();
+        
+        // Fecha de inicio: 1 de marzo del año actual
+        const fechaInicio = new Date(añoActual, 2, 1); // Marzo es mes 2
+        fechaInicioInput.value = fechaInicio.toISOString().split('T')[0];
+        
+        // Fecha de fin: 15 de diciembre del año actual
+        const fechaFin = new Date(añoActual, 11, 15); // Diciembre es mes 11
+        fechaFinInput.value = fechaFin.toISOString().split('T')[0];
+        
+        // Mostrar duración estimada
+        mostrarDuracion();
+    });
+
+    // Validar fechas en tiempo real
+    document.getElementById('fecha_inicio').addEventListener('change', mostrarDuracion);
+    document.getElementById('fecha_fin').addEventListener('change', mostrarDuracion);
+
+    function mostrarDuracion() {
+        const fechaInicio = document.getElementById('fecha_inicio').value;
+        const fechaFin = document.getElementById('fecha_fin').value;
+        
+        if (fechaInicio && fechaFin) {
+            const inicio = new Date(fechaInicio);
+            const fin = new Date(fechaFin);
+            
+            if (inicio < fin) {
+                const diffTime = Math.abs(fin - inicio);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                // Mostrar duración en el pie de página del formulario
+                const duracionDiv = document.createElement('div');
+                duracionDiv.id = 'duracionInfo';
+                duracionDiv.className = 'alert alert-info mt-2';
+                duracionDiv.innerHTML = '<i class="bi bi-clock"></i> Duración estimada: <strong>' + diffDays + ' días</strong>';
+                
+                // Remover duración anterior si existe
+                const existing = document.getElementById('duracionInfo');
+                if (existing) {
+                    existing.remove();
+                }
+                
+                // Insertar después del campo de fecha fin
+                const fechaFinDiv = document.getElementById('fecha_fin').parentNode;
+                fechaFinDiv.parentNode.insertBefore(duracionDiv, fechaFinDiv.nextSibling);
+            }
+        }
+    }
+
+    // Confirmación al activar un período
+    document.getElementById('activo').addEventListener('change', function() {
+        if (this.checked) {
+            if (!confirm('Al activar este período, los demás períodos serán desactivados automáticamente. ¿Desea continuar?')) {
+                this.checked = false;
+            }
+        }
+    });
+</script>
+{% endblock %}
