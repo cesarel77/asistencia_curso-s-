@@ -7,6 +7,91 @@ from flask import Flask, render_template, jsonify, request, abort, g
 app = Flask(__name__)
 
 # ================================================================
+# DATOS EN MEMORIA - LISTAS DE DICCIONARIOS CON DATOS DE PRUEBA
+# ================================================================
+
+# Datos de prueba para Estudiantes
+estudiantes_data = [
+    {'id': 1, 'nombre': 'Juan', 'apellido': 'Perez', 'rut': '12345678-9', 'email': 'juan.perez@email.com', 'fecha_nacimiento': '2015-05-10', 'id_curso': 1},
+    {'id': 2, 'nombre': 'Luis', 'apellido': 'Rojas', 'rut': '87654321-0', 'email': 'luis.rojas@email.com', 'fecha_nacimiento': '2015-08-20', 'id_curso': 1},
+    {'id': 3, 'nombre': 'María', 'apellido': 'Lopez', 'rut': '11223344-5', 'email': 'maria.lopez@email.com', 'fecha_nacimiento': '2015-03-15', 'id_curso': 1},
+    {'id': 4, 'nombre': 'Pedro', 'apellido': 'Gomez', 'rut': '22334455-6', 'email': 'pedro.gomez@email.com', 'fecha_nacimiento': '2015-07-25', 'id_curso': 1},
+    {'id': 5, 'nombre': 'Ana', 'apellido': 'Martinez', 'rut': '33445566-7', 'email': 'ana.martinez@email.com', 'fecha_nacimiento': '2016-01-10', 'id_curso': 2},
+    {'id': 6, 'nombre': 'Carlos', 'apellido': 'Sanchez', 'rut': '44556677-8', 'email': 'carlos.sanchez@email.com', 'fecha_nacimiento': '2015-11-05', 'id_curso': 2},
+    {'id': 7, 'nombre': 'Lucía', 'apellido': 'Fernandez', 'rut': '55667788-9', 'email': 'lucia.fernandez@email.com', 'fecha_nacimiento': '2015-09-12', 'id_curso': 3},
+    {'id': 8, 'nombre': 'Diego', 'apellido': 'Garcia', 'rut': '66778899-0', 'email': 'diego.garcia@email.com', 'fecha_nacimiento': '2015-06-18', 'id_curso': 3},
+    {'id': 9, 'nombre': 'Valentina', 'apellido': 'Ramos', 'rut': '77889900-1', 'email': 'valentina.ramos@email.com', 'fecha_nacimiento': '2014-04-22', 'id_curso': 4},
+    {'id': 10, 'nombre': 'Nicolás', 'apellido': 'Flores', 'rut': '88990011-2', 'email': 'nicolas.flores@email.com', 'fecha_nacimiento': '2015-12-30', 'id_curso': 4},
+    {'id': 11, 'nombre': 'Camila', 'apellido': 'Castro', 'rut': '99001122-3', 'email': 'camila.castro@email.com', 'fecha_nacimiento': '2015-02-14', 'id_curso': 5},
+    {'id': 12, 'nombre': 'Matías', 'apellido': 'Ortiz', 'rut': '00112233-4', 'email': 'matias.ortiz@email.com', 'fecha_nacimiento': '2014-08-08', 'id_curso': 5}
+]
+
+# Datos de prueba para Cursos
+cursos_data = [
+    {'id': 1, 'nombre_curso': '3° Básico A', 'nivel': '3° básico', 'letra': 'A', 'año_lectivo': 2026, 'id_periodo': 1, 'id_profesor_jefe': 1},
+    {'id': 2, 'nombre_curso': '3° Básico B', 'nivel': '3° básico', 'letra': 'B', 'año_lectivo': 2026, 'id_periodo': 1, 'id_profesor_jefe': 2},
+    {'id': 3, 'nombre_curso': '4° Básico A', 'nivel': '4° básico', 'letra': 'A', 'año_lectivo': 2026, 'id_periodo': 1, 'id_profesor_jefe': 3},
+    {'id': 4, 'nombre_curso': '5° Básico C', 'nivel': '5° básico', 'letra': 'C', 'año_lectivo': 2026, 'id_periodo': 1, 'id_profesor_jefe': 4},
+    {'id': 5, 'nombre_curso': '6° Básico A', 'nivel': '6° básico', 'letra': 'A', 'año_lectivo': 2026, 'id_periodo': 1, 'id_profesor_jefe': 1}
+]
+
+# Datos de prueba para Profesores
+profesores_data = [
+    {'id': 1, 'nombre': 'María', 'apellido': 'González', 'rut': '11111111-1', 'email': 'maria.gonzalez@colegio.cl', 'especialidad': 'Matemáticas'},
+    {'id': 2, 'nombre': 'Patricia', 'apellido': 'Muñoz', 'rut': '22222222-2', 'email': 'patricia.munoz@colegio.cl', 'especialidad': 'Historia'},
+    {'id': 3, 'nombre': 'Carlos', 'apellido': 'Reyes', 'rut': '33333333-3', 'email': 'carlos.reyes@colegio.cl', 'especialidad': 'Lenguaje'},
+    {'id': 4, 'nombre': 'Ana', 'apellido': 'Torres', 'rut': '44444444-4', 'email': 'ana.torres@colegio.cl', 'especialidad': 'Ciencias'}
+]
+
+# Datos de prueba para Periodos Académicos
+periodos_data = [
+    {'id': 1, 'fecha_inicio': '2026-03-01', 'fecha_fin': '2026-07-15', 'activo': True},
+    {'id': 2, 'fecha_inicio': '2026-08-01', 'fecha_fin': '2026-12-20', 'activo': False}
+]
+
+# Datos de prueba para Sesiones de Clase
+sesiones_data = [
+    {'id': 1, 'fecha': '2026-06-10', 'hora_inicio': '08:00:00', 'hora_fin': '09:30:00', 'bloque_horario': '1° BLOQUE', 'id_curso': 1, 'id_profesor': 1},
+    {'id': 2, 'fecha': '2026-06-10', 'hora_inicio': '09:45:00', 'hora_fin': '11:15:00', 'bloque_horario': '2° BLOQUE', 'id_curso': 1, 'id_profesor': 2},
+    {'id': 3, 'fecha': '2026-06-10', 'hora_inicio': '08:00:00', 'hora_fin': '09:30:00', 'bloque_horario': '1° BLOQUE', 'id_curso': 2, 'id_profesor': 3},
+    {'id': 4, 'fecha': '2026-06-11', 'hora_inicio': '08:00:00', 'hora_fin': '09:30:00', 'bloque_horario': '1° BLOQUE', 'id_curso': 1, 'id_profesor': 1},
+    {'id': 5, 'fecha': '2026-06-11', 'hora_inicio': '09:45:00', 'hora_fin': '11:15:00', 'bloque_horario': '2° BLOQUE', 'id_curso': 3, 'id_profesor': 4},
+    {'id': 6, 'fecha': '2026-06-12', 'hora_inicio': '08:00:00', 'hora_fin': '09:30:00', 'bloque_horario': '1° BLOQUE', 'id_curso': 4, 'id_profesor': 1},
+    {'id': 7, 'fecha': '2026-06-12', 'hora_inicio': '09:45:00', 'hora_fin': '11:15:00', 'bloque_horario': '2° BLOQUE', 'id_curso': 5, 'id_profesor': 2}
+]
+
+# Datos de prueba para Asistencias
+asistencias_data = [
+    {'id': 1, 'estado': 'PRESENTE', 'hora_registro': '08:30:00', 'observacion': 'Llegó puntual', 'id_estudiante': 1, 'id_sesion': 1},
+    {'id': 2, 'estado': 'PRESENTE', 'hora_registro': '08:35:00', 'observacion': 'Llegó puntual', 'id_estudiante': 2, 'id_sesion': 1},
+    {'id': 3, 'estado': 'AUSENTE', 'hora_registro': '09:00:00', 'observacion': 'No se presentó', 'id_estudiante': 3, 'id_sesion': 1},
+    {'id': 4, 'estado': 'TARDE', 'hora_registro': '08:45:00', 'observacion': 'Llegó 15 minutos tarde', 'id_estudiante': 4, 'id_sesion': 1},
+    {'id': 5, 'estado': 'PRESENTE', 'hora_registro': '08:25:00', 'observacion': 'Llegó temprano', 'id_estudiante': 1, 'id_sesion': 2},
+    {'id': 6, 'estado': 'PRESENTE', 'hora_registro': '08:30:00', 'observacion': 'Llegó puntual', 'id_estudiante': 2, 'id_sesion': 2},
+    {'id': 7, 'estado': 'PRESENTE', 'hora_registro': '08:28:00', 'observacion': 'Llegó puntual', 'id_estudiante': 3, 'id_sesion': 2},
+    {'id': 8, 'estado': 'PRESENTE', 'hora_registro': '08:35:00', 'observacion': 'Llegó puntual', 'id_estudiante': 5, 'id_sesion': 3},
+    {'id': 9, 'estado': 'AUSENTE', 'hora_registro': '09:10:00', 'observacion': 'No se presentó', 'id_estudiante': 6, 'id_sesion': 3},
+    {'id': 10, 'estado': 'PRESENTE', 'hora_registro': '08:30:00', 'observacion': 'Llegó puntual', 'id_estudiante': 1, 'id_sesion': 4},
+    {'id': 11, 'estado': 'PRESENTE', 'hora_registro': '08:32:00', 'observacion': 'Llegó puntual', 'id_estudiante': 2, 'id_sesion': 4},
+    {'id': 12, 'estado': 'TARDE', 'hora_registro': '08:50:00', 'observacion': 'Llegó 20 minutos tarde', 'id_estudiante': 3, 'id_sesion': 4},
+    {'id': 13, 'estado': 'PRESENTE', 'hora_registro': '08:30:00', 'observacion': 'Llegó puntual', 'id_estudiante': 7, 'id_sesion': 5},
+    {'id': 14, 'estado': 'PRESENTE', 'hora_registro': '08:30:00', 'observacion': 'Llegó puntual', 'id_estudiante': 8, 'id_sesion': 5},
+    {'id': 15, 'estado': 'PRESENTE', 'hora_registro': '08:30:00', 'observacion': 'Llegó puntual', 'id_estudiante': 9, 'id_sesion': 6},
+    {'id': 16, 'estado': 'AUSENTE', 'hora_registro': '09:15:00', 'observacion': 'No se presentó', 'id_estudiante': 10, 'id_sesion': 6},
+    {'id': 17, 'estado': 'PRESENTE', 'hora_registro': '08:30:00', 'observacion': 'Llegó puntual', 'id_estudiante': 11, 'id_sesion': 7},
+    {'id': 18, 'estado': 'PRESENTE', 'hora_registro': '08:30:00', 'observacion': 'Llegó puntual', 'id_estudiante': 12, 'id_sesion': 7}
+]
+
+# Datos de prueba para Justificaciones
+justificaciones_data = [
+    {'id': 1, 'motivo': 'Licencia médica por enfermedad', 'documento_adjunto': 'licencia_medica_1.pdf', 'fecha_documentacion': '2026-06-10', 'estado': 'APROBADA', 'id_asistencia': 3},
+    {'id': 2, 'motivo': 'Permiso por asistencia a funeral', 'documento_adjunto': 'permiso_funeral.pdf', 'fecha_documentacion': '2026-06-11', 'estado': 'PENDIENTE', 'id_asistencia': 6},
+    {'id': 3, 'motivo': 'Cita médica con especialista', 'documento_adjunto': 'cita_medica.pdf', 'fecha_documentacion': '2026-06-12', 'estado': 'APROBADA', 'id_asistencia': 9},
+    {'id': 4, 'motivo': 'Certificado de nacimiento', 'documento_adjunto': 'certificado_nacimiento.pdf', 'fecha_documentacion': '2026-06-13', 'estado': 'RECHAZADA', 'id_asistencia': 12}
+]
+
+
+# ================================================================
 # CONFIGURACIÓN DE LA BASE DE DATOS
 # ================================================================
 

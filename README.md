@@ -39,7 +39,8 @@
 
 templates/
 ├── base.html
-├── index.html
+├── inicio.html
+├── 404.html
 ├── estudiantes/
 │   ├── lista.html
 │   ├── detalle.html
