@@ -1,0 +1,314 @@
+<!-- templates/asistencias/registrar.html -->
+{% extends 'base.html' %}
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-plus-circle"></i> Registrar Asistencia
+            </div>
+            <div class="card-body">
+                <form action="/api/asistencias/" method="POST" id="formAsistencia">
+                    <!-- Curso -->
+                    <div class="mb-3">
+                        <label for="id_curso" class="form-label fw-bold">
+                            <i class="bi bi-book"></i> Curso <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="id_curso" name="id_curso" required>
+                            <option value="">Seleccione un curso</option>
+                            {% for curso in cursos %}
+                            <option value="{{ curso.id }}">{{ curso.nombre_curso }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Seleccione el curso para cargar los estudiantes.</div>
+                    </div>
+
+                    <!-- Sesión -->
+                    <div class="mb-3">
+                        <label for="id_sesion" class="form-label fw-bold">
+                            <i class="bi bi-clock"></i> Sesión <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="id_sesion" name="id_sesion" required>
+                            <option value="">Primero seleccione un curso</option>
+                        </select>
+                        <div class="form-text">Seleccione la sesión de clase para registrar asistencia.</div>
+                    </div>
+
+                    <!-- Fecha y Hora (info) -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body py-2">
+                                    <p class="mb-0">
+                                        <i class="bi bi-calendar text-primary"></i> 
+                                        <strong>Fecha:</strong> <span id="fecha_info">-</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body py-2">
+                                    <p class="mb-0">
+                                        <i class="bi bi-clock text-primary"></i> 
+                                        <strong>Hora:</strong> <span id="hora_info">-</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Estudiantes -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-people"></i> Estudiantes <span class="text-danger">*</span>
+                        </label>
+                        <div id="lista_estudiantes" class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
+                            <p class="text-muted text-center py-4">
+                                <i class="bi bi-info-circle"></i> Seleccione un curso y sesión para cargar los estudiantes.
+                            </p>
+                        </div>
+                        <div class="form-text">Seleccione el estado de asistencia para cada estudiante.</div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/asistencias/" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success" id="btnGuardar" disabled>
+                            <i class="bi bi-check-circle"></i> Guardar Asistencias
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-info-circle"></i> Información
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-asterisk text-danger"></i> Los campos marcados con 
+                    <span class="text-danger">*</span> son obligatorios.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-check-circle text-success"></i> Puede registrar la asistencia de todos 
+                    los estudiantes de un curso en una sola sesión.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-lightbulb text-warning"></i> Los estados disponibles son: 
+                    <span class="badge bg-success">PRESENTE</span>
+                    <span class="badge bg-danger">AUSENTE</span>
+                    <span class="badge bg-warning text-dark">TARDE</span>
+                    <span class="badge bg-info">JUSTIFICADO</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cursoSelect = document.getElementById('id_curso');
+        const sesionSelect = document.getElementById('id_sesion');
+        const listaEstudiantes = document.getElementById('lista_estudiantes');
+        const btnGuardar = document.getElementById('btnGuardar');
+        const fechaInfo = document.getElementById('fecha_info');
+        const horaInfo = document.getElementById('hora_info');
+
+        // Cargar sesiones al seleccionar un curso
+        cursoSelect.addEventListener('change', function() {
+            const cursoId = this.value;
+            if (cursoId) {
+                // Cargar sesiones del curso
+                fetch('/api/cursos/' + cursoId + '/sesiones')
+                    .then(response => response.json())
+                    .then(data => {
+                        sesionSelect.innerHTML = '<option value="">Seleccione una sesión</option>';
+                        if (data.sesiones && data.sesiones.length > 0) {
+                            data.sesiones.forEach(sesion => {
+                                const option = document.createElement('option');
+                                option.value = sesion.id;
+                                option.textContent = sesion.fecha + ' ' + sesion.hora_inicio + ' - ' + sesion.hora_fin;
+                                option.dataset.fecha = sesion.fecha;
+                                option.dataset.hora_inicio = sesion.hora_inicio;
+                                option.dataset.hora_fin = sesion.hora_fin;
+                                sesionSelect.appendChild(option);
+                            });
+                            sesionSelect.disabled = false;
+                        } else {
+                            sesionSelect.innerHTML = '<option value="">No hay sesiones para este curso</option>';
+                            sesionSelect.disabled = true;
+                        }
+                        listaEstudiantes.innerHTML = '<p class="text-muted text-center py-4">' +
+                            '<i class="bi bi-info-circle"></i> Seleccione una sesión para cargar los estudiantes.</p>';
+                        btnGuardar.disabled = true;
+                        fechaInfo.textContent = '-';
+                        horaInfo.textContent = '-';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        sesionSelect.innerHTML = '<option value="">Error al cargar sesiones</option>';
+                        sesionSelect.disabled = true;
+                    });
+            } else {
+                sesionSelect.innerHTML = '<option value="">Primero seleccione un curso</option>';
+                sesionSelect.disabled = true;
+                listaEstudiantes.innerHTML = '<p class="text-muted text-center py-4">' +
+                    '<i class="bi bi-info-circle"></i> Seleccione un curso y sesión para cargar los estudiantes.</p>';
+                btnGuardar.disabled = true;
+                fechaInfo.textContent = '-';
+                horaInfo.textContent = '-';
+            }
+        });
+
+        // Cargar estudiantes al seleccionar una sesión
+        sesionSelect.addEventListener('change', function() {
+            const sesionId = this.value;
+            const selectedOption = this.options[this.selectedIndex];
+            
+            if (sesionId && selectedOption.dataset.fecha) {
+                // Mostrar información de la sesión
+                fechaInfo.textContent = selectedOption.dataset.fecha;
+                horaInfo.textContent = selectedOption.dataset.hora_inicio + ' - ' + selectedOption.dataset.hora_fin;
+                
+                // Cargar estudiantes del curso
+                const cursoId = cursoSelect.value;
+                fetch('/api/cursos/' + cursoId + '/estudiantes')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.estudiantes && data.estudiantes.length > 0) {
+                            let html = '<div class="table-responsive"><table class="table table-striped table-hover">';
+                            html += '<thead><tr>';
+                            html += '<th>#</th>';
+                            html += '<th>Nombre</th>';
+                            html += '<th>RUT</th>';
+                            html += '<th>Estado</th>';
+                            html += '<th>Observación</th>';
+                            html += '</tr></thead><tbody>';
+                            
+                            data.estudiantes.forEach((estudiante, index) => {
+                                html += '<tr>';
+                                html += '<td>' + (index + 1) + '</td>';
+                                html += '<td><strong>' + estudiante.nombre + ' ' + estudiante.apellido + '</strong></td>';
+                                html += '<td>' + estudiante.rut + '</td>';
+                                html += '<td>';
+                                html += '<select class="form-select form-select-sm estado-select" name="estado_' + estudiante.id + '" required>';
+                                html += '<option value="PRESENTE">PRESENTE</option>';
+                                html += '<option value="AUSENTE">AUSENTE</option>';
+                                html += '<option value="TARDE">TARDE</option>';
+                                html += '<option value="JUSTIFICADO">JUSTIFICADO</option>';
+                                html += '</select>';
+                                html += '</td>';
+                                html += '<td>';
+                                html += '<input type="text" class="form-control form-control-sm observacion-input" name="observacion_' + estudiante.id + '" placeholder="Observación (opcional)" maxlength="500">';
+                                html += '</td>';
+                                html += '</tr>';
+                            });
+                            
+                            html += '</tbody></table></div>';
+                            listaEstudiantes.innerHTML = html;
+                            btnGuardar.disabled = false;
+                        } else {
+                            listaEstudiantes.innerHTML = '<p class="text-muted text-center py-4">' +
+                                '<i class="bi bi-exclamation-triangle"></i> No hay estudiantes en este curso.</p>';
+                            btnGuardar.disabled = true;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        listaEstudiantes.innerHTML = '<p class="text-danger text-center py-4">' +
+                            '<i class="bi bi-exclamation-triangle"></i> Error al cargar estudiantes.</p>';
+                        btnGuardar.disabled = true;
+                    });
+            } else {
+                listaEstudiantes.innerHTML = '<p class="text-muted text-center py-4">' +
+                    '<i class="bi bi-info-circle"></i> Seleccione una sesión para cargar los estudiantes.</p>';
+                btnGuardar.disabled = true;
+                fechaInfo.textContent = '-';
+                horaInfo.textContent = '-';
+            }
+        });
+
+        // Enviar formulario
+        document.getElementById('formAsistencia').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const sesionId = document.getElementById('id_sesion').value;
+            const estados = document.querySelectorAll('.estado-select');
+            const observaciones = document.querySelectorAll('.observacion-input');
+            
+            let asistencias = [];
+            let errores = false;
+            
+            estados.forEach((select, index) => {
+                const estudianteId = select.name.replace('estado_', '');
+                const estado = select.value;
+                const observacion = observaciones[index] ? observaciones[index].value : '';
+                
+                if (!estado) {
+                    alert('Por favor, seleccione un estado para todos los estudiantes.');
+                    errores = true;
+                    return;
+                }
+                
+                asistencias.push({
+                    id_estudiante: parseInt(estudianteId),
+                    id_sesion_clase: parseInt(sesionId),
+                    estado: estado,
+                    observacion: observacion
+                });
+            });
+            
+            if (errores) return;
+            
+            if (asistencias.length === 0) {
+                alert('No hay estudiantes para registrar asistencia.');
+                return;
+            }
+            
+            // Guardar cada asistencia individualmente
+            let guardadas = 0;
+            let erroresGuardado = [];
+            
+            asistencias.forEach((asistencia, index) => {
+                fetch('/api/asistencias/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(asistencia)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        erroresGuardado.push('Estudiante ID ' + asistencia.id_estudiante + ': ' + data.error);
+                    } else {
+                        guardadas++;
+                    }
+                    
+                    // Si es la última, mostrar resultado
+                    if (index === asistencias.length - 1) {
+                        if (erroresGuardado.length > 0) {
+                            alert('❌ Se registraron ' + guardadas + ' asistencias con ' + erroresGuardado.length + ' errores:\n' + erroresGuardado.join('\n'));
+                        } else {
+                            alert('✅ ' + guardadas + ' asistencias registradas exitosamente.');
+                            window.location.href = '/asistencias/';
+                        }
+                    }
+                })
+                .catch(error => {
+                    erroresGuardado.push('Error al guardar: ' + error);
+                    if (index === asistencias.length - 1) {
+                        alert('❌ Se registraron ' + guardadas + ' asistencias con ' + erroresGuardado.length + ' errores:\n' + erroresGuardado.join('\n'));
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
